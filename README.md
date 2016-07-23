@@ -2,5 +2,5 @@ Simple command line utility that converts the Opera bookmark file (a json format
 
 Bookmark file is located in %appdata%\Opera Software\Opera Stable\Bookmarks
 
-Written in C#, requires .NET 3.5
+Written in C#, requires .NET 3.5       
 Made for Opera v38.0.2220.41, compatibility with other versions is untested
