@@ -37,17 +37,28 @@ namespace OperaBookmarkConverter {
                     var json = JObject.Parse(streamReader.ReadToEnd());
 
                     var bar = json["roots"]["bookmark_bar"]["children"];
+                    var other = json["roots"]["custom_root"];
 
-                    if (bar == null) {
-                        Console.WriteLine("Could not find bookmark bar data inside bookmarks file");
+                    if (bar == null && other == null) {
+                        Console.WriteLine("Error: Could not find bookmark data inside bookmarks file");
                         Console.ReadLine();
                         return;
                     }
 
-                    Console.WriteLine("Processing...");
+                    if (bar != null) {
+                        Console.WriteLine("Processing bookmark bar...");
 
-                    foreach (JToken child in bar.Children()) {
-                        ProcessItem(child, 1);
+                        foreach (JToken child in bar.Children()) {
+                            ProcessItem(child, 1);
+                        }
+                    }
+
+                    if (other != null) {
+                        Console.WriteLine("Processing other folders...");
+
+                        foreach (JProperty child in other.Children()) {
+                            ProcessItem(child.Value, 1);
+                        }
                     }
 
                     output.Append("</DL>");
@@ -55,12 +66,14 @@ namespace OperaBookmarkConverter {
             } catch(Exception e) {
                 Console.WriteLine("Error: {0}", e.Message);
                 Console.WriteLine("Error: Could not process file, stopped.");
+                Console.ReadLine();
+                return;
             }
 
             //System.Diagnostics.Debug.Write(output.ToString());
 
             try {
-                string filename = string.Format("opera_bookmarks-{0}-{1}-{2}_{3}-{4}.html", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Second);
+                string filename = string.Format("opera_bookmarks-{0}-{1}-{2}_{3}-{4}.html", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute);
 
                 using (StreamWriter file = new StreamWriter(filename)) {
                     file.Write(output.ToString());
